@@ -120,6 +120,8 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 	char *page = NULL;
 	ssize_t length;
 	int new_value;
+    int old_value;
+    int selinux_state;
 
 	if (count >= PAGE_SIZE)
 		return -ENOMEM;
@@ -156,9 +158,8 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 	selinux_status_update_setenforce(new_value);
 #else
 	new_value = !!new_value;
+    old_value = 1;
 
-
-	old_value = enforcing_enabled(state);
 #ifdef CONFIG_SECURITY_SELINUX_ALWAYS_ENFORCE
 	// If always enforce option is set, selinux is always enforcing
 	new_value = 1;
@@ -166,12 +167,12 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 	// If always permissive option is set, selinux is always permissive
 	new_value = 0;
 #endif
+
 	if (new_value != old_value) {
-		length = avc_has_perm(&selinux_state,
+		length = avc_has_perm(selinux_state,
 				      current_sid(), SECINITSID_SECURITY,
 
-				      SECCLASS_SECURITY, SECURITY__SETENFORCE,
-				      NULL);
+				      SECCLASS_SECURITY, NULL);
 		if (length)
 			goto out;
 		audit_log(current->audit_context, GFP_KERNEL, AUDIT_MAC_STATUS,
