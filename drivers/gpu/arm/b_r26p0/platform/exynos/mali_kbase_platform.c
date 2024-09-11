@@ -279,7 +279,7 @@ static int gpu_dvfs_update_config_data_from_dt(struct kbase_device *kbdev)
 	gpu_update_config_data_int(np, "gpu_max_clock", &platform->gpu_max_clock);
 #ifdef CONFIG_CAL_IF
 	platform->gpu_max_clock_limit = (int)cal_dfs_get_max_freq(platform->g3d_cmu_cal_id);
-        platform->interactive.highspeed_clock = 1053000;
+        platform->interactive.highspeed_clock = 1369000;
         platform->interactive.highspeed_load = 75;
 #else
 	gpu_update_config_data_int(np, "gpu_max_clock_limit", &platform->gpu_max_clock_limit);
@@ -297,6 +297,7 @@ static int gpu_dvfs_update_config_data_from_dt(struct kbase_device *kbdev)
 	else
 		GPU_LOG(DVFS_WARNING, DUMMY, 0u, 0u, "mismatch tmu lock table size: %d, %d\n",
 				of_data_int, TMU_LOCK_CLK_END);
+		platform->tmu_lock_clk[0]=1369000;
 		platform->tmu_lock_clk[0]=1053000;
 		platform->tmu_lock_clk[1]=949000;
 		platform->tmu_lock_clk[2]=839000;
